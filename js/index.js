@@ -5,7 +5,6 @@
 
 const KEY_API = "67bd416e05a29b82305240a9e92925db"
 
-const countryURL = "https://countryflagsapi.com/png/"
 
 
 let cityInput = document.querySelector("#city-input")
@@ -13,11 +12,15 @@ let searchBTN = document.querySelector("#search")
 
 const cityElement = document.querySelector('#city')
 const tempElement = document.querySelector('#temperature span')
-const umidityElement = document.querySelector('#umidity span')
+const humidityElement = document.querySelector('#umidity span')
 const descElement = document.querySelector('#description')
 const weatherIconElement = document.querySelector('#weather-icon')
 const countryElement = document.querySelector('#country')
 const windElement = document.querySelector('#wind span')
+
+const weatherContainer = document.querySelector('#weather-data')
+
+
 
 
 
@@ -28,12 +31,24 @@ const getWeatherData = async(city) =>{
 
     const res = await fetch(apiWeatherUrl)
     const data = await res.json()
-    console.log(data)
+    
+    return data
 }
 
-const weatherData = (city) =>{
-    getWeatherData(city)
+const weatherData = async (city) =>{
+   const data = await getWeatherData(city)
 
+   cityElement.innerText = data.name
+   tempElement.innerText = parseInt(data.main.temp)
+   descElement.innerText = data.weather[0].description
+   
+   weatherIconElement.setAttribute("src",`http://openweathermap.org/img/wn/${data.weather[0].icon}.png`)
+   
+
+   humidityElement.innerText = `${data.main.humidity}%`
+
+   windElement.innerText = `${data.wind.speed}km/h`
+   weatherContainer.classList.remove("hide")
 }
 
 //event
@@ -45,4 +60,12 @@ searchBTN.addEventListener("click",(e) =>{
 
     weatherData(city)
     
+})
+
+cityInput.addEventListener("keyup", (e) =>{
+    if(e.code === "Enter"){
+        const city = e.target.value
+
+        weatherData(city)
+    }
 })
